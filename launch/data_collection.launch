@@ -1,0 +1,7 @@
+<launch>
+  <node name='data_collection_node' pkg='nist_atb_eval' type='data_collection.py' output='screen'>
+    <param name='step' value='false' />
+    <param name='data_dir' value='$(find nist_atb_eval)/data' />
+    <param name='img_desc' value='warped' />
+  </node>
+</launch>

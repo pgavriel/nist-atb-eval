@@ -1,0 +1,11 @@
+<launch>
+  <!-- This node allows you to visually edit the regions for each component on top
+       of a reference board image, and save the new CSV to be used by the evaluator. -->
+  <node name='roi_config' pkg='nist_atb_eval' type='roi_config.py' output='screen'>
+    <param name='step' value='false' />
+    <param name='dir' value='$(find nist_atb_eval)/config' />
+    <param name='in_csv' value='tb_roi.csv' />
+    <param name='out_csv' value='tb_roi.csv' />
+    <param name='ref_image' value='$(find nist_atb_eval)/data/full/000-full.png' />
+  </node>
+</launch>
