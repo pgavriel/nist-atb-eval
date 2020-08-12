@@ -1,7 +1,12 @@
 <launch>
   <node name='data_collection_node' pkg='nist_atb_eval' type='data_collection.py' output='screen'>
-    <param name='step' value='false' />
+    <!-- In step_through mode, program will wait indefinitely for a key press -->
+    <param name='step_through' value='false' />
+    <!-- Delay in milliseconds (when step_through is disabled) -->
+    <param name='step_rate' value='350' />
+    <!-- Directory where output images are saved -->
     <param name='data_dir' value='$(find nist_atb_eval)/data' />
+    <!-- String to append to saved image names as a descriptor -->
     <param name='img_desc' value='warped' />
   </node>
 </launch>

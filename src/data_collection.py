@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import os, sys
+import rospy
 import math
 import numpy as np
 import apriltag
+import imutils
 import cv2
 #import matplotlib.pyplot as plt
 import pyrealsense2 as rs
@@ -58,7 +60,10 @@ def sortpoints(board_corners,tag_corners):
 
 def getLargestContourCenter(mat):
     gray = cv2.cvtColor(mat,cv2.COLOR_BGR2GRAY)
-    contours, hierarchy = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    if imutils.is_cv2() or imutils.is_cv4():
+        (contours, _) = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    elif imutils.is_cv3():
+        (_, contours, _) = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     if len(contours) != 0:
         c = max(contours, key = cv2.contourArea)
         area = cv2.contourArea(c)
@@ -84,8 +89,10 @@ def isolate_board(image,thresh=120,area_lb=0,area_ub=100000):
     smooth = cv2.bilateralFilter(gray,9,75,75)
     ret,th1 = cv2.threshold(smooth,thresh,255,cv2.THRESH_BINARY)
     stage1_img = cv2.cvtColor(th1,cv2.COLOR_GRAY2BGR)
-    contours, hierarchy = cv2.findContours(th1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-
+    if imutils.is_cv2() or imutils.is_cv4():
+        (contours, _) = cv2.findContours(th1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    elif imutils.is_cv3():
+        (_, contours, _) = cv2.findContours(th1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     if len(contours) != 0:
         c = max(contours, key = cv2.contourArea)
         area = cv2.contourArea(c)
@@ -252,11 +259,22 @@ def find_homography(image,corners,size=400):
 def main():
     #ROS Setup & Parameters
     rospy.init_node('eval_node', log_level=rospy.INFO)
-    step_through = rospy.get_param("~step")
-    data_dir = rospy.get_param("~data_dir")
-    img_file_desc = rospy.get_param("~img_desc")
+    #Default Params
+    step_through = False
+    step_rate = 1000
+    data_dir = os.path.join(os.getcwd(),'data')
+    img_file_desc = "warped"
     img_file_loc = None
+    try: #Load from parameter server
+        step_through = rospy.get_param("~step_through")
+        step_rate  = rospy.get_param("~step_rate")
+        data_dir = rospy.get_param("~data_dir")
+        img_file_desc = rospy.get_param("~img_desc")
+    except:
+        rospy.logerr("Couldn't load parameters from param server. Using defaults.")
+
     rospy.loginfo("step_through: %s", step_through)
+    rospy.loginfo("step_rate: %s", step_rate)
     rospy.loginfo("data_dir: %s", data_dir)
     rospy.loginfo("img_file_desc: %s", img_file_desc)
 
@@ -268,6 +286,18 @@ def main():
 
     # Start streaming
     pipeline.start(config)
+
+    #CV Winows
+    cv2.namedWindow('StageOne', cv2.WINDOW_AUTOSIZE)
+    cv2.createTrackbar('step_delay_ms','StageOne',step_rate,3000,nothing)
+    cv2.createTrackbar('thresh','StageOne',120,255,nothing)
+    cv2.createTrackbar('corner_size','StageOne',50,200,nothing)
+    cv2.createTrackbar('line_thresh','StageOne',110,255,nothing)
+    cv2.namedWindow('StageTwo', cv2.WINDOW_AUTOSIZE)
+    cv2.namedWindow('Warped', cv2.WINDOW_AUTOSIZE)
+    if img_file_loc is None:
+        cv2.createTrackbar('board_state','Warped',5,20,nothing)
+    cv2.namedWindow('Corners', cv2.WINDOW_AUTOSIZE)
 
     # Main loop
     try:
@@ -287,19 +317,7 @@ def main():
             gray = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
             gray_3channel = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
 
-            #CV Winows
-            cv2.namedWindow('StageOne', cv2.WINDOW_AUTOSIZE)
-            cv2.createTrackbar('speed','StageOne',1000,2000,nothing)
-            cv2.createTrackbar('thresh','StageOne',120,255,nothing)
-            cv2.createTrackbar('corner_size','StageOne',50,200,nothing)
-            cv2.createTrackbar('line_thresh','StageOne',110,255,nothing)
-            cv2.namedWindow('StageTwo', cv2.WINDOW_AUTOSIZE)
-            cv2.namedWindow('Warped', cv2.WINDOW_AUTOSIZE)
-            if img_file_loc is None:
-                cv2.createTrackbar('board_state','Warped',5,20,nothing)
-            cv2.namedWindow('Corners', cv2.WINDOW_AUTOSIZE)
-            delay = cv2.getTrackbarPos('speed','StageOne')
-            wait = 0 if step_through else delay
+
 
             # Detect apriltag
             detector = apriltag.Detector()
@@ -311,6 +329,9 @@ def main():
             x = int(warped.shape[1]/4)
             err_img = cv2.line(err_img,(x,y),(3*x,3*y),(0,0,255),5)
             err_img = cv2.line(err_img,(3*x,y),(x,3*y),(0,0,255),5)
+            cv2.imshow('StageOne',err_img)
+            cv2.imshow('StageTwo',err_img)
+            cv2.imshow('Warped',err_img)
             if (len(result) == 0):
                 print("No apriltag detected.")
                 #warped = np.zeros((gray.shape[0],gray.shape[1],3),np.uint8)
@@ -368,8 +389,14 @@ def main():
             depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
 
 
-
-
+            # Set program speed
+            step_rate = cv2.getTrackbarPos('step_delay_ms','StageOne')
+            if step_rate == 0: step_rate = 1
+            wait = 0 if step_through else step_rate
+            if wait != 0:
+                print "Waiting " + str(wait) + "ms"
+            else:
+                print "step_through mode enabled. Press 'p' to switch modes. Press any key to step. (CV window must be focused)"
             # Get user key input
             key = cv2.waitKey(wait) & 0xFF
             # Save screenshot (S pressed)
@@ -384,8 +411,10 @@ def main():
             # Toggle frame step mode (P key)
             elif key == ord('p'):
                 step_through = not step_through
+                print "step_through set to " + str(step_through)
             # Quit program (Q pressed)
             elif key == ord('q'):
+                print "Quitting..."
                 break
     finally:
         # Stop streaming
@@ -395,7 +424,7 @@ def main():
 if __name__ == '__main__':
     # Set directory to save images
     # cwd = os.getcwd()
-    # datadir = os.path.join(cwd,'data')
+    # datadir = os.path.join(os.getcwd(),'data')
     # print("Data Directory:", datadir)
     # print("Arguments Given: ",len(sys.argv))
     # print("Args: ", sys.argv)
