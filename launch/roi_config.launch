@@ -6,6 +6,6 @@
     <param name='dir' value='$(find nist_atb_eval)/config' />
     <param name='in_csv' value='tb_roi.csv' />
     <param name='out_csv' value='tb_roi.csv' />
-    <param name='ref_image' value='$(find nist_atb_eval)/data/full/000-full.png' />
+    <param name='ref_image' value='$(find ros_picam)/captures/picam1-taskboard-full1.png' />
   </node>
 </launch>

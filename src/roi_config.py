@@ -11,7 +11,7 @@ def nothing(x):
 
 def drawROI(image,roi,focus):
     img = image.copy()
-    size = 25
+    size = 50
     font = cv2.FONT_HERSHEY_SIMPLEX
     component = 1
     for r in roi:
