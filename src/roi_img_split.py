@@ -9,18 +9,19 @@ from roi_config import getROI
 from os import listdir
 from os.path import isfile, join
 
-# Define naming scheme for extracted files
-def naming_scheme(filename):
-    return filename[:3]
-
 if __name__ == '__main__':
-    source_path = '/home/csrobot/taskboard_ws/src/nist-atb-eval/data/full'
-    save_path = '/home/csrobot/tb_data'
-    roi_csv = '/home/csrobot/taskboard_ws/src/nist-atb-eval/config/tb_roi.csv'
+    source_path = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test'
+    save_path = '/home/pgavriel/tb_data/test'
+    roi_csv = '/home/pgavriel/ros_ws/src/nist_atb_eval/config/tb_roi.csv'
 
-    file_list = [f for f in listdir(source_path) if isfile(join(source_path, f))]
+    file_list=os.listdir(source_path)
+    for f in file_list:
+        if not(f.endswith(".png")):
+            file_list.remove(f)
+    file_list.sort()
     print("FILE LIST:")
     print(file_list)
+
 
     # Create and move to output/save directory
     if not os.path.exists(save_path):
@@ -33,12 +34,32 @@ if __name__ == '__main__':
     print("ROI LOADED:")
     roi = getROI(roi_csv,img.shape[0],img.shape[1])
 
+    # Set labels manually (All loaded images have the same state)
     #scores = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-    scores = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
-    print(scores)
+    #scores = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+
+    # Load labels into dict from csv
+    use_dict = True
+    scores_dict = dict()
+    csv_file = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/labels.txt'
+    with open(csv_file) as label_csv:
+        reader = csv.reader(label_csv)
+        for row in reader:
+            file = row[0]
+            states = row[1:]
+            if len(states) == 20:
+                scores_dict[file] = states
+            else:
+                print("State length incorrect for {}, skipping.".format(file))
+
+
+    #print(scores)
 
     size = 50
     for f in file_list:
+        if use_dict:
+            scores = scores_dict[f]
+            print("File: {}  Scores: {}".format(f,scores))
         file = join(source_path,f)
         counter = 1
         try:
