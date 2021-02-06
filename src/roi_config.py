@@ -44,7 +44,7 @@ def setFocus(x,roi,img):
     print("Trackbar Positions:",x,y,s)
     pass
 
-def getROI(csv_file,width,height):
+def getROI(csv_file,width,height,output=True):
     im_width = width
     im_height = height
     roi_list = []
@@ -57,7 +57,7 @@ def getROI(csv_file,width,height):
             y = float(row['yval'])
             scale = float(row['scale'])
             roi_list.append((name,x,y,scale))
-            print(str('{:02}'.format(component)),name,x,y,scale)
+            if output: print(str('{:02}'.format(component)),name,x,y,scale)
             component += 1
     return roi_list
 
