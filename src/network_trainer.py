@@ -30,14 +30,14 @@ print("Device: {}".format(device))
 
 # Hyperparameters
 batch_size = 1 # TODO: Research tuning this
-num_epochs = 3
+num_epochs = 20
 
 # Settings
 save_path = '/home/pgavriel/ros_ws/src/nist_atb_eval/models'
-component = 19
+component = 9
 version = 'v1'
 model_name = '{}_{:02d}.pth'.format(version,component)
-model_name = 'test.pth'
+
 
 
 # Load Data
