@@ -8,14 +8,16 @@ import numpy as np
 from roi_config import getROI
 
 
-srcpath = '/home/pgavriel/ros_ws/src/ros_picam/captures'
-savepath = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/misc'
-
+srcpath = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/empty'
 os.chdir(srcpath)
-img1 = cv2.imread('picam1-taskboard-empty1.png')
+img1 = cv2.imread('picam2-taskboard-14-04-53-236640.png')
 img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
-img2 = cv2.imread('picam1-taskboard-full1.png')
+srcpath = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/full'
+os.chdir(srcpath)
+img2 = cv2.imread('picam2-taskboard-14-22-33-464538.png')
 img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
+
+savepath = '/home/pgavriel/tb_data/misc'
 os.chdir(savepath)
 
 if img1.shape != img2.shape:

@@ -153,12 +153,13 @@ if __name__ == '__main__':
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     evaluator = TaskboardEvaluator(model_dir,eval_dir,roi_csv,data_transform,model_version)
-    evaluator.save_dir = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/scored'
+
 
     # EVALUATE SINGLE IMAGE
     # eval_img = "test11.png"
     # evaluator.load_board(eval_img)
     # evaluator.eval_board(debug=False)
+    # evaluator.save_dir = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/scored'
     # evaluator.save_results()
     # print("SCORES: {}".format(evaluator.scores))
 
