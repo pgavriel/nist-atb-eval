@@ -46,6 +46,7 @@ Once you have your ROI csv set up, this script can be used to go through your co
 Now that you have 20 folders full of correctly labeled component images, it's time to train the models. The **network_trainer.py** script is used for this.
 
 ## STAGE 4: Taskboard Image Evaluation
+![Scored Images](data/misc/tb_scores.png)  
 With the networks now trained, we should be able to extract a novel taskboard image, and feed it through the networks to evaluate the board state.  
 **network_evaluate.py** defines a TaskboardEvaluator class that should be instantiated with the following:  
 *model_dir* - The directory to find the saved .pth files   
