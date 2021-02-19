@@ -14,6 +14,8 @@ To start collecting data you need to set up some kind of overhead camera that ca
 For an initial dataset, the easiest thing to do is collect a set of images with all components present, and another set of images for empty boards. This way very little data labeling needs to be done when splitting the taskboard images into training images.  
 
 ### Taskboard Extraction (using taskboard_detection.py)   
+![Taskboard Detection Stage 1-3](data/misc/tb_detection1.png)  
+![Taskboard Detection Stage 4](data/misc/tb_detection2.png)  
 OpenCV is used to extract the precise locations of the four corners of a taskboard, which is then used to warp the taskboard into a square image. Approaching the problem this way provides a very consistent dataset even if the board is rotated or the camera is moved in some way. The way this is currently implemented works, but could be significantly improved or approached differently, because as long as the board corners can be accurately extracted, everything else should still work.  
 **taskboard_detection.py** can be imported, and the **process_taskboard(image)** function will take an image and attempt to extract and return a taskboard image like the ones in the dataset. Note that an apriltag is used in our approach as a way of keeping the output orientation consistent. Debug images can be saved to see what's going wrong if things aren't working. The method used is outlined:  
 1. Isolate the board   
@@ -29,6 +31,7 @@ OpenCV is used to extract the precise locations of the four corners of a taskboa
 
 
 ## STAGE 2: ROI Setup & Data Splitting  
+![Taskboard ROI Image Splitting](data/misc/tb_roi_split.png)  
 Because all the collected taskboard images should be nearly identical, the position of any particular component within each image should be fixed, meaning we can explicitly define image locations to extract each component.   
 ### roi_config.py / roi_config.launch  
 Provide this script with one of your collected taskboard images, and the default ROI .csv file, and it will allow you to visually edit the component regions as needed, and then save the new configuration to a .csv file. This .csv file is then used to extract component sub-images in order to train the individual networks, and for evaluating taskboard images.  
