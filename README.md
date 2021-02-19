@@ -6,6 +6,7 @@ This package contains tools for data collection, network training, and automatic
 PACKAGE STILL A WORK IN PROGRESS.    
 
 ## STAGE 1: Dataset Collection  
+![Taskboard Image Transformation](data/misc/tb_transform.png)  
 The universality of the pre-trained models contained in this package is unproven and unlikely considering they were trained on a relatively small dataset in fairly static conditions. Making the trained models more robust is a future goal. So in order to get things working in a new environment, a new dataset will need to be collected. However, it's worth noting that with a set of roughly 200 images, I was able to get a board evaluation accuracy of 98.6% on a testing set.   
 
 To start collecting data you need to set up some kind of overhead camera that can take pictures of the taskboard in various states and positions. Initially we started using an Intel RealSense camera, but the resolution wasn't ideal, so instead we used a Raspberry Pi 4 with an Arducam Auto-Focus 5MP camera module. The Raspberry Pi ran a ROS node with a service let us extract and save taskboard images over wifi. The setup for the ROS Pi Camera is detailed [here](https://github.com/pgavriel/ros_picam).  
@@ -35,7 +36,7 @@ Provide this script with one of your collected taskboard images, and the default
 Once you have your ROI csv set up, this script can be used to go through your collected dataset, and split all of the component sub-images into separate folders that will be used to train the networks. The labels of the images being split must be specified, so that the first character in the filename of each image can be the proper label (i.e. 0 or 1).
 
 ## STAGE 3: Neural Network Setup & Training
-Now that you have 20 folders full of correctly labeled component images, it's time to train the models. The **network_trainer.py** script is used for this. 
+Now that you have 20 folders full of correctly labeled component images, it's time to train the models. The **network_trainer.py** script is used for this.
 
 ## STAGE 4: Taskboard Image Evaluation
 With the networks now trained, we should be able to extract a novel taskboard image, and feed it through the networks to evaluate the board state.  
