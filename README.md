@@ -14,8 +14,7 @@ To start collecting data you need to set up some kind of overhead camera that ca
 For an initial dataset, the easiest thing to do is collect a set of images with all components present, and another set of images for empty boards. This way very little data labeling needs to be done when splitting the taskboard images into training images.  
 
 ### Taskboard Extraction (using taskboard_detection.py)   
-![Taskboard Detection Stage 1-3](data/misc/tb_detection1.png)  
-![Taskboard Detection Stage 4](data/misc/tb_detection2.png)  
+![Taskboard Detection Stages](data/misc/tb_detection.png)  
 OpenCV is used to extract the precise locations of the four corners of a taskboard, which is then used to warp the taskboard into a square image. Approaching the problem this way provides a very consistent dataset even if the board is rotated or the camera is moved in some way. The way this is currently implemented works, but could be significantly improved or approached differently, because as long as the board corners can be accurately extracted, everything else should still work.  
 **taskboard_detection.py** can be imported, and the **process_taskboard(image)** function will take an image and attempt to extract and return a taskboard image like the ones in the dataset. Note that an apriltag is used in our approach as a way of keeping the output orientation consistent. Debug images can be saved to see what's going wrong if things aren't working. The method used is outlined:  
 1. Isolate the board   
@@ -38,7 +37,12 @@ Provide this script with one of your collected taskboard images, and the default
 ### roi_img_split.py    
 Once you have your ROI csv set up, this script can be used to go through your collected dataset, and split all of the component sub-images into separate folders that will be used to train the networks. The labels of the images being split must be specified, so that the first character in the filename of each image can be the proper label (i.e. 0 or 1).
 
-## STAGE 3: Neural Network Setup & Training
+## STAGE 3: Neural Network Setup & Training  
+![16mm Bar](data/misc/bar.gif)
+![Waterproof Connector](data/misc/conn.gif)
+![16mm Rod](data/misc/rod.gif)
+![Medium Gear](data/misc/gear.gif)
+![M16 Nut](data/misc/nut.gif)   
 Now that you have 20 folders full of correctly labeled component images, it's time to train the models. The **network_trainer.py** script is used for this.
 
 ## STAGE 4: Taskboard Image Evaluation
