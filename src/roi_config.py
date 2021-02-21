@@ -23,7 +23,7 @@ def drawROI(image,roi,focus):
         x = int(r[1] * image.shape[0])
         y = int(r[2] * image.shape[1])
         s = int(size * r[3])
-        img = cv2.rectangle(img,(x-s,y-s),(x+s,y+s),color,1)
+        img = cv2.rectangle(img,(x-s,y-s),(x+s,y+s),color,2)
         cv2.putText(img,str(component),(x-s+5,y+s-5), font, 0.4,color,1,cv2.LINE_AA)
         component += 1
     return img

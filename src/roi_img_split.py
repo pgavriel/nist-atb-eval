@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # Load labels into dict from csv
     use_dict = False
     scores_dict = dict()
-    csv_file = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/labels.txt'
+    csv_file = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/labels.csv'
     with open(csv_file) as label_csv:
         reader = csv.reader(label_csv)
         for row in reader:

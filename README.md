@@ -30,10 +30,10 @@ OpenCV is used to extract the precise locations of the four corners of a taskboa
 
 ### Data Labeling Tool (data_labeler.launch)
 ![Data Labeling Tool](data/misc/data_labeler.png)
-This is a tool included to make the process of labeling board data much easier. It will look into a given **source_path** directory, find all the .png images, and go through them one by one, allowing the user to set the states of each component by clicking in their region. Clicking the next button will append the filename and board state to a .csv file specified by the **save_path** and **save_file** arguments in the launch file. The csv created by this tool can be used by the **roi_img_split.py** to split all your data into component images with proper labels. To use:     
+This is a tool included to make the process of labeling board data much easier. It will look into a given **source_path** directory, find all the .png images, and go through them one by one, allowing the user to set the states of each component by clicking in their region. Clicking the next button will append the filename and board state to a .csv file specified by the **save_path** and **save_file** arguments in the launch file. The csv created by this tool can be used by **roi_img_split.py** to split all your data into component images with proper labels, which can then be used for training. To use:     
 > roslaunch nist_atb_eval data_labeler.launch source_path:=[YOUR IMAGE DIR]    
 
-
+Arguments can also easily be set directly within the launch file to avoid long command line arguments.   
 
 ## STAGE 2: ROI Setup & Data Splitting  
 ![Taskboard ROI Image Splitting](data/misc/tb_roi_split.png)  

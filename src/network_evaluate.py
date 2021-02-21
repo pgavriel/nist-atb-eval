@@ -156,44 +156,44 @@ if __name__ == '__main__':
 
 
     # EVALUATE SINGLE IMAGE
-    # eval_img = "test11.png"
-    # evaluator.load_board(eval_img)
-    # evaluator.eval_board(debug=False)
-    # evaluator.save_dir = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/scored'
-    # evaluator.save_results()
-    # print("SCORES: {}".format(evaluator.scores))
+    eval_img = "test11.png"
+    evaluator.load_board(eval_img)
+    evaluator.eval_board(debug=False)
+    evaluator.save_dir = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/scored'
+    evaluator.save_results()
+    print("SCORES: {}".format(evaluator.scores))
 
     # EVALUATE ENTIRE FOLDER WITH LABELED GROUND TRUTH CSV
-    eval_list = []
-    for f in os.listdir(eval_dir):
-        if f.endswith(".png"):
-            eval_list.append(f)
-    eval_list.sort()
-
-    groundtruth = open('/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/labels.txt','r')
-    lines = groundtruth.readlines()
-    counter = 0
-    percent_sum = 0
-    for f in eval_list:
-        evaluator.load_board(f)
-        evaluator.eval_board(debug=False)
-        print("\nFile: {}".format(f))
-        print("{} EVAL SCORES".format(evaluator.scores))
-        # For Testing
-        for line in lines:
-            l = line.split(',')
-            if l[0] == f:
-                truth = list(map(int, l[1:]))
-                print("{} GROUND TRUTH".format(truth))
-                diff = []
-                diff_sum = 0
-                for i in range(0,20):
-                    diff.append(int(truth[i] == evaluator.scores[i]))
-                diff_sum = sum(diff)
-                percent = (float(diff_sum)/20)*100
-                counter = counter + 1
-                percent_sum = percent_sum + percent
-                print("{} COMPARED, {}/20 - {}%".format(diff,diff_sum,percent))
-                break
-
-    print("\nOVERALL PERFORMANCE\nAverage Accuracy on Test Set: {}%".format(percent_sum/counter))
+    # eval_list = []
+    # for f in os.listdir(eval_dir):
+    #     if f.endswith(".png"):
+    #         eval_list.append(f)
+    # eval_list.sort()
+    #
+    # groundtruth = open('/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/labels.txt','r')
+    # lines = groundtruth.readlines()
+    # counter = 0
+    # percent_sum = 0
+    # for f in eval_list:
+    #     evaluator.load_board(f)
+    #     evaluator.eval_board(debug=False)
+    #     print("\nFile: {}".format(f))
+    #     print("{} EVAL SCORES".format(evaluator.scores))
+    #     # For Testing
+    #     for line in lines:
+    #         l = line.split(',')
+    #         if l[0] == f:
+    #             truth = list(map(int, l[1:]))
+    #             print("{} GROUND TRUTH".format(truth))
+    #             diff = []
+    #             diff_sum = 0
+    #             for i in range(0,20):
+    #                 diff.append(int(truth[i] == evaluator.scores[i]))
+    #             diff_sum = sum(diff)
+    #             percent = (float(diff_sum)/20)*100
+    #             counter = counter + 1
+    #             percent_sum = percent_sum + percent
+    #             print("{} COMPARED, {}/20 - {}%".format(diff,diff_sum,percent))
+    #             break
+    #
+    # print("\nOVERALL PERFORMANCE\nAverage Accuracy on Test Set: {}%".format(percent_sum/counter))
