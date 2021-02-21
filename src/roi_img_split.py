@@ -10,8 +10,8 @@ from os import listdir
 from os.path import isfile, join
 
 if __name__ == '__main__':
-    source_path = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test'
-    save_path = '/home/pgavriel/tb_data/test'
+    source_path = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test2'
+    save_path = '/home/pgavriel/tb_data/test2'
     roi_csv = '/home/pgavriel/ros_ws/src/nist_atb_eval/config/tb_roi.csv'
 
     file_list=os.listdir(source_path)
@@ -36,10 +36,10 @@ if __name__ == '__main__':
 
     # Set labels manually (All loaded images have the same state)
     #scores = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-    #scores = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
+    scores = [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ]
 
     # Load labels into dict from csv
-    use_dict = True
+    use_dict = False
     scores_dict = dict()
     csv_file = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/labels.txt'
     with open(csv_file) as label_csv:

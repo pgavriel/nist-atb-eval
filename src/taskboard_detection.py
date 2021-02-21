@@ -246,7 +246,7 @@ def find_homography(image,corners,size=800):
 # Takes an image, finds the corners of the taskboard, and returns a square
 # warped image of only the taskboard. Saves debug images to help understand the process.
 def process_taskboard(image,thresh=80,scale_down_factor=4,debug=True):
-    path = '/home/ubuntu/catkin_ws/src/ros_picam/captures/debug/'
+    path = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test2'
     # Scale image down for processing
     scaled = scale_image(image,(100/scale_down_factor))
     gray = cv2.cvtColor(scaled,cv2.COLOR_BGR2GRAY)
