@@ -2,6 +2,7 @@
 import os, sys
 import csv
 import cv2
+import rospy
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
@@ -139,58 +140,94 @@ class TaskboardEvaluator(object):
 
 
 if __name__ == '__main__':
-    model_dir = '/home/pgavriel/ros_ws/src/nist_atb_eval/models'
-    model_version = 'v1'
-    eval_dir = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test'
-    roi_csv = '/home/pgavriel/ros_ws/src/nist_atb_eval/config/tb_roi.csv'
+    # Setup ROS Node
+    rospy.init_node('taskboard_network_evaluator', log_level=rospy.INFO)
+    # Load ROS Parameters
+    model_dir = rospy.get_param("~model_dir")
+    rospy.loginfo("Model Dir: %s", model_dir)
+    model_version = rospy.get_param("~model_version")
+    rospy.loginfo("Model Version: %s", model_version)
+    roi_csv = rospy.get_param("~roi_csv")
+    rospy.loginfo("ROI CSV: %s", roi_csv)
+    eval_dir = rospy.get_param("~eval_dir")
+    rospy.loginfo("Eval Dir: %s", eval_dir)
+    # Set up list of images to evaluate
+    eval_images = rospy.get_param("~eval_images")
+    eval_list = []
+    if eval_images.upper() == "ALL":
+        for f in os.listdir(eval_dir):
+            if f.endswith(".png"):
+                eval_list.append(f)
+        eval_list.sort()
+    else:
+        eval_list = eval_images.split(' ')
+    rospy.loginfo("Eval List: %s", eval_list)
+    rospy.loginfo("Eval List Length: %s", len(eval_list))
+    # Ground truth parameters
+    use_ground_truth = rospy.get_param("~use_ground_truth")
+    if use_ground_truth:
+        gt_csv = rospy.get_param("~ground_truth_csv")
+        rospy.loginfo("Ground Truth CSV: %s", gt_csv)
+    else:
+        rospy.loginfo("Use Ground Truth: FALSE")
+    # Image output parameters
+    save_img_output = rospy.get_param("~save_img_output")
+    if save_img_output:
+        save_dir = rospy.get_param("~save_dir")
+        rospy.loginfo("Image Output Dir: %s", save_dir)
+    else:
+        rospy.loginfo("Save Image Output: FALSE")
+
     # Transform should be the same as the one used when training
     data_transform = transforms.Compose(
         [transforms.Resize(32),
         transforms.CenterCrop(32),
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+
+    # Create our evaluator
     evaluator = TaskboardEvaluator(model_dir,eval_dir,roi_csv,data_transform,model_version)
 
+    if save_img_output:
+        evaluator.save_dir = save_dir
+    if use_ground_truth:
+        groundtruth = open(gt_csv,'r')
+        gt_lines = groundtruth.readlines()
+        labeled_files = []
+        for l in gt_lines:
+            labeled_files.append(l.split(',')[0])
+        counter = 0
+        percent_sum = 0
 
-    # EVALUATE SINGLE IMAGE
-    eval_img = "test11.png"
-    evaluator.load_board(eval_img)
-    evaluator.eval_board(debug=False)
-    evaluator.save_dir = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/scored'
-    evaluator.save_results()
-    print("SCORES: {}".format(evaluator.scores))
+    # Evaluate all specified image files
+    for file in eval_list:
+        print("Evaluating '{}'".format(file))
+        evaluator.load_board(file)
+        evaluator.eval_board(debug=False)
 
-    # EVALUATE ENTIRE FOLDER WITH LABELED GROUND TRUTH CSV
-    # eval_list = []
-    # for f in os.listdir(eval_dir):
-    #     if f.endswith(".png"):
-    #         eval_list.append(f)
-    # eval_list.sort()
-    #
-    # groundtruth = open('/home/pgavriel/ros_ws/src/nist_atb_eval/data/test/labels.txt','r')
-    # lines = groundtruth.readlines()
-    # counter = 0
-    # percent_sum = 0
-    # for f in eval_list:
-    #     evaluator.load_board(f)
-    #     evaluator.eval_board(debug=False)
-    #     print("\nFile: {}".format(f))
-    #     print("{} EVAL SCORES".format(evaluator.scores))
-    #     # For Testing
-    #     for line in lines:
-    #         l = line.split(',')
-    #         if l[0] == f:
-    #             truth = list(map(int, l[1:]))
-    #             print("{} GROUND TRUTH".format(truth))
-    #             diff = []
-    #             diff_sum = 0
-    #             for i in range(0,20):
-    #                 diff.append(int(truth[i] == evaluator.scores[i]))
-    #             diff_sum = sum(diff)
-    #             percent = (float(diff_sum)/20)*100
-    #             counter = counter + 1
-    #             percent_sum = percent_sum + percent
-    #             print("{} COMPARED, {}/20 - {}%".format(diff,diff_sum,percent))
-    #             break
-    #
-    # print("\nOVERALL PERFORMANCE\nAverage Accuracy on Test Set: {}%".format(percent_sum/counter))
+        if save_img_output:
+            evaluator.save_results()
+        print("{} EVAL SCORES".format(evaluator.scores))
+
+        if use_ground_truth:
+            if file in labeled_files:
+                for line in gt_lines:
+                    l = line.split(',')
+                    labeled_file = l[0]
+                    if labeled_file == file:
+                        truth = list(map(int, l[1:]))
+                        print("{} GROUND TRUTH".format(truth))
+                        diff = []
+                        diff_sum = 0
+                        for i in range(0,20):
+                            diff.append(int(truth[i] == evaluator.scores[i]))
+                        diff_sum = sum(diff)
+                        percent = (float(diff_sum)/20)*100
+                        counter = counter + 1
+                        percent_sum = percent_sum + percent
+                        print("{} COMPARED, {}/20 - {}%".format(diff,diff_sum,percent))
+            else:
+                rospy.logwarn("File '%s' not found in ground truth list, skipping.",file)
+    if use_ground_truth:
+        print("\nOVERALL PERFORMANCE\nAverage Accuracy on Test Set: {}%".format(percent_sum/counter))
+    print("\nEvaluation Complete.")

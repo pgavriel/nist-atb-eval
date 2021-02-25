@@ -28,11 +28,10 @@ def drawROI(image,roi,focus):
         component += 1
     return img
 
-def getPoints(roi,imshape):
-    size = 50
+def getPoints(roi,imshape,scale=50):
     x = int(roi[1] * imshape[0])
     y = int(roi[2] * imshape[1])
-    s = int(size * roi[3])
+    s = int(scale * roi[3])
     pt1 = (x-s,y-s)
     pt2 = (x+s,y-s)
     pt3 = (x+s,y+s)

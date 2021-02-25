@@ -63,16 +63,24 @@ Once your ROI csv is set up, this launch file will go through a folder of taskbo
 ### network_trainer.launch  (network_trainer.py)   
 After splitting your training data, you should now have 20 folders full of correctly labeled component images (the label should be the first character in the filename). The network_trainer.launch file will allow you to quickly train and test models for any components you specify. Arguments in the launch file are: the path to the folder containing **all** of the component image folders, the path to your set of testing folders, the path to save models to, model version (which is used when evaluating to find the right model), training batch_size, number of epochs, which components to train, and a few others. Train one component at a time, several components (i.e. components:="2 7 9 17 19"), or all of them by setting the components argument to 0. To use:    
 > roslaunch nist_atb_eval network_trainer.launch     
-     
+
 ## STAGE 4: Taskboard Image Evaluation
 ![Scored Images](data/misc/tb_scores.png)  
-With the networks now trained, we should be able to extract a novel taskboard image, and feed it through the networks to evaluate the board state.  
-**network_evaluate.py** defines a TaskboardEvaluator class that should be instantiated with the following:  
+### network_eval.launch  (network_evaluate.py)    
+With the networks now trained, we should be able to extract a novel taskboard image, and feed it through the networks to evaluate the board state. For this we use network_eval.launch, which can evaluate entire sets of images using our models, as well as create scored output images, and compare scores to ground truth labels. The launch file has several parameters:   
 *model_dir* - The directory to find the saved .pth files   
+*model_version* - The model version is just the prefix to look for on the .pth files.  
+*roi_csv* - Path to .csv file that defines ROIs on the board   
 *eval_dir* - The directory to find images to be evaluated  
-*roi_csv* - Path to .csv file that defines ROIs on the board
-*transform* - Transform composition to be performed on the data going into the networks. Should be the same transforms used when training.  
-*model_ver* - The model version is just the prefix to look for on the .pth files.  
+*eval_images* - List of images to evaluate separated by a space or "ALL" to evaluate the whole eval_dir   
+*use_ground_truth* - Whether to compare scores to ground truth labels    
+*ground_truth_csv* - csv defining our ground truth labels    
+*save_img_output* - Whether to save an output image visualizing scores    
+*save_dir* - Directory to save output images    
+To use this evaluator:
+> roslaunch nist_atb_eval network_eval.launch     
+
+
 
 ### TaskboardEvaluator Functions
 **load_board(image)** - The argument passed is the file name of the image to evaluate, which should be found in *eval_dir*. This opens the image, finds the ROIs, takes a cropped image for each component, and performs the necessary transforms. The result is a list of 20 tensors stored in TaskboardEvaluator.components that are ready to be fed into their respective networks.  

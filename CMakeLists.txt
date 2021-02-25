@@ -167,6 +167,7 @@ include_directories(
    src/data_labeler.py
    src/roi_img_split.py
    src/network_trainer.py
+   src/network_evaluate.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 

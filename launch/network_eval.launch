@@ -1,0 +1,33 @@
+<launch>
+  <!-- Location of .pth model files -->
+  <arg name='model_dir' default='$(find nist_atb_eval)/models' />
+  <!-- Model prefix to look for -->
+  <arg name='model_version' default='v1'/>
+  <!-- CSV file defining taskboard ROIs -->
+  <arg name='roi_csv' default='$(find nist_atb_eval)/config/tb_roi.csv' />
+  <!-- Location of images to evaluate -->
+  <arg name='eval_dir' default='$(find nist_atb_eval)/data/test' />
+  <!-- Image names to evalaute, multiple files can be separated by a space, set to ALL means evaluate all images -->
+  <arg name='eval_images' default='test01.png test11.png' />
+  <!-- Whether to check the scores against ground truth labels -->
+  <arg name='use_ground_truth' default='true' />
+  <!-- CSV providing ground truth labels -->
+  <arg name='ground_truth_csv' default='$(find nist_atb_eval)/data/test/labels.csv' />
+  <!-- Whether to save an output image visualizing scores -->
+  <arg name='save_img_output' default='true' />
+  <!-- Location to save score image output -->
+  <arg name='save_dir' default='$(find nist_atb_eval)/data/test/scored' />
+
+  <!-- Start the node with given arguments -->
+  <node name='taskboard_network_evaluator' pkg='nist_atb_eval' type='network_evaluate.py' output='screen' required='true'>
+    <param name='model_dir' value='$(arg model_dir)' />
+    <param name='model_version' value='$(arg model_version)' />
+    <param name='roi_csv' value='$(arg roi_csv)' />
+    <param name='eval_dir' value='$(arg eval_dir)' />
+    <param name='eval_images' value='$(arg eval_images)' />
+    <param name='use_ground_truth' value='$(arg use_ground_truth)' />
+    <param name='ground_truth_csv' value='$(arg ground_truth_csv)' />
+    <param name='save_img_output' value='$(arg save_img_output)' />
+    <param name='save_dir' value='$(arg save_dir)' />
+  </node>
+</launch>
