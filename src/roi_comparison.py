@@ -6,6 +6,7 @@ import cv2
 from PIL import Image
 import numpy as np
 from roi_config import getROI
+from roi_config import cropRegion
 
 
 srcpath = '/home/pgavriel/ros_ws/src/nist_atb_eval/data/empty'
@@ -35,13 +36,10 @@ size = 50
 stacks = []
 for r in roi:
     filename = r[0] + '.png'
-    x = int(r[1] * img1.shape[0])
-    y = int(r[2] * img1.shape[1])
-    s = int(size * r[3])
     print("Saving {} - x:{} y:{} s:{}".format(filename,x,y,s))
-    crop1 = img1[y-s:y+s, x-s:x+s]
+    crop1 = cropRegion(r,img1)
     crop1 = cv2.resize(crop1, (100,100), interpolation = cv2.INTER_AREA)
-    crop2 = img2[y-s:y+s, x-s:x+s]
+    crop2 = cropRegion(r,img2)
     crop2 = cv2.resize(crop2, (100,100), interpolation = cv2.INTER_AREA)
 
     stack = np.hstack((crop1, crop2))

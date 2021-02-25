@@ -39,6 +39,13 @@ def getPoints(roi,imshape):
     pt4 = (x-s,y+s)
     return [pt1,pt2,pt3,pt4]
 
+def cropRegion(roi,image,scale=50):
+    x = int(roi[1] * image.shape[0])
+    y = int(roi[2] * image.shape[1])
+    s = int(scale * roi[3])
+    crop = image[y-s:y+s, x-s:x+s]
+    return crop
+
 def setFocus(x,roi,img):
     focus = x
     if focus == 0:
@@ -68,7 +75,8 @@ def getROI(csv_file,width,height,output=True):
             y = float(row['yval'])
             scale = float(row['scale'])
             roi_list.append((name,x,y,scale))
-            if output: print(str('{:02}'.format(component)),name,x,y,scale)
+            if output:
+                print("Component {0:>2}: [ {1:>9}, {2:>5}, {3:>5}, {4:>3} ]".format(component,name,x,y,scale))
             component += 1
     return roi_list
 
@@ -133,7 +141,7 @@ def main():
         roi_img = drawROI(image,roi,focus)
 
         cv2.imshow('ROI_Config', roi_img)
-        wait = 0 if step_through else 1000
+        wait = 0 if step_through else 200
         key = cv2.waitKey(wait) & 0xFF
         if key == ord('p'):
             step_through = not step_through

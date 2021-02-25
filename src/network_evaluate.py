@@ -11,6 +11,7 @@ import torchvision.transforms as transforms
 from TaskboardDataset import TaskboardDataset
 from TaskboardNetwork import Net
 from roi_config import getROI
+from roi_config import cropRegion
 
 # Set Device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -53,12 +54,8 @@ class TaskboardEvaluator(object):
         roi = getROI(self.roi_csv,img.shape[0],img.shape[1],False)
         self.components = []
         # TODO: Image splitter should be made into a class with a function to easily do this
-        size = 50
         for r in roi:
-            x = int(r[1] * img.shape[0])
-            y = int(r[2] * img.shape[1])
-            s = int(size * r[3])
-            crop = img[y-s:y+s, x-s:x+s]
+            crop = cropRegion(r,img)
             crop = cv2.resize(crop, (96,96), interpolation = cv2.INTER_AREA)
             image = Image.fromarray(crop)
             if self.transform:

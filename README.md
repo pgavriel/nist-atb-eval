@@ -37,11 +37,22 @@ Arguments can also easily be set directly within the launch file to avoid long c
 
 ## STAGE 2: ROI Setup & Data Splitting  
 ![Taskboard ROI Image Splitting](data/misc/tb_roi_split.png)  
-Because all the collected taskboard images should be nearly identical, the position of any particular component within each image should be fixed, meaning we can explicitly define image locations to extract each component.   
-### roi_config.py / roi_config.launch  
-Provide this script with one of your collected taskboard images, and the default ROI .csv file, and it will allow you to visually edit the component regions as needed, and then save the new configuration to a .csv file. This .csv file is then used to extract component sub-images in order to train the individual networks, and for evaluating taskboard images.  
-### roi_img_split.py    
-Once you have your ROI csv set up, this script can be used to go through your collected dataset, and split all of the component sub-images into separate folders that will be used to train the networks. The labels of the images being split must be specified, so that the first character in the filename of each image can be the proper label (i.e. 0 or 1).
+Because all the collected taskboard images should be nearly identical, the position of any particular component within each image should be fixed, meaning we can explicitly define image locations to extract each component.  
+
+### roi_config.launch  (roi_config.py)  
+This launch file opens an GUI that allows you to visually edit the component regions on top of a reference image. The arguments allow you to specify the csv location, input file, output file, and reference image. Arguments can be set through the command line or by editing the launch file. To use:     
+> roslaunch nist_atb_eval roi_config.launch     
+
+When using this GUI, the keyboard controls are:   
+**S** - Save current configuration to output file   
+**Q** - Quit without saving    
+**P** - Toggle step mode    
+
+### image_splitter.launch  (roi_img_split.py)    
+Once your ROI csv is set up, this launch file will go through a folder of taskboard images, and use the ROI csv to split each board into labeled component images within appropriately named folders. These folders of labeled components are used to train the networks for evaluation. The arguments allow you to set the source_path, save_path, roi_csv, image output size, and whether to load labels from a csv file, or to simply apply the same board state for each image. Arguments can be set through the command line or by editing the launch file. By running this launch file without changing anything, it will split up the provided test set for you as an example. To use:   
+> roslaunch nist_atb_eval image_splitter.launch     
+
+
 
 ## STAGE 3: Neural Network Setup & Training  
 ![16mm Bar](data/misc/bar.gif)
@@ -67,22 +78,13 @@ With the networks now trained, we should be able to extract a novel taskboard im
 **eval_component(component)** - Takes the specified component tensor, runs it through it's respective model, and returns the predicted score.
 **save_results()** - *In order to use this you must first set the TaskboardEvaluator.save_dir member for output.* This function will save an image of the original board with green boxes drawn around detected components, and red boxes around components that were not detected. It can be easier to quickly verify accuracy this way.  
 
-### Controls  
-With any of the opencv windows focused, keystrokes will be heard by the program.  
-##### data_collection node:   
-P - Pause/Play (Toggle step_through mode)  
-S - Save current taskboard image  
-Q - Quit program  
-##### roi_config node:  
-S - Save new ROI configuration to specified .csv file  
-Q - Quit program without saving  
 
 ### Notes    
 apriltag import resolved with pip install apriltag  
 imutils import resolved with pip install imutils    
 
 ### Deprecated Files  
-**data_collection.py** - Original data collection was done using a realsense camera, and the code for board detection and extraction was all contained in one file. The relevant functions from this are contained in taskboard_detection.py.   
-**mse_evaluate.py** - The first method of board evaluation tried to figure out the score for each component based on a Mean Squared Error between a test image, an empty board reference, and a full board reference. While this kind of works, it's not robust to different capture angles.  
+**old_data_collection.py** - Original data collection was done using a realsense camera, and the code for board detection and extraction was all contained in one file. The relevant functions from this are contained in taskboard_detection.py.   
+**old_mse_evaluate.py** - The first method of board evaluation tried to figure out the score for each component based on a Mean Squared Error between a test image, an empty board reference, and a full board reference. While this kind of works, it's not robust to different capture angles.  
 **roi_comparison.py** - This is just a script that will get the ROIs for 2 taskboard images and save a bunch of side by side reference images (seen above).  
 **import_test.py** - Just a simple test script for checking imports.  

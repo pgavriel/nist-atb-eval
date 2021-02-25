@@ -1,0 +1,29 @@
+<launch>
+  <!-- Folder of images to be split -->
+  <arg name='source_path' default='$(find nist_atb_eval)/data/test' />
+  <!-- Destination for output image folders -->
+  <arg name='save_path' default='$(arg source_path)/split' />
+  <!-- CSV file defining taskboard ROIs -->
+  <arg name='roi_csv' default='$(find nist_atb_eval)/config/tb_roi.csv' />
+  <!-- Component output image size -->
+  <arg name='output_size' default='96' />
+
+  <!-- load_labels set to false will apply the same board_state to all images in the source_path
+       load_labels set to true will load the board_state for each image from a specified csv file -->
+  <arg name='load_labels' default='true' />
+  <!-- csv file to load board labels from -->
+  <arg if='$(arg load_labels)' name='board_state' default='$(find nist_atb_eval)/data/test/labels.csv' />
+  <!-- Manually set board_state, applied to all images, separated by spaces -->
+  <arg unless='$(arg load_labels)' name='board_state' default='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0' />
+  <!-- <arg unless='load_labels' name='board_state' default='1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1' /> -->
+
+  <!-- Start the node with given arguments -->
+  <node name='taskboard_image_splitter' pkg='nist_atb_eval' type='roi_img_split.py' output='screen' required='true'>
+    <param name='source_path' value='$(arg source_path)' />
+    <param name='save_path' value='$(arg save_path)' />
+    <param name='roi_csv' value='$(arg roi_csv)' />
+    <param name='output_size' value='$(arg output_size)' />
+    <param name='load_labels' value='$(arg load_labels)' />
+    <param name='board_state' value='$(arg board_state)' />
+  </node>
+</launch>

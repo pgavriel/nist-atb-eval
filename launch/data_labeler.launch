@@ -8,11 +8,12 @@
   <!-- CSV file defining taskboard ROIs -->
   <arg name='roi_csv' default='$(find nist_atb_eval)/config/tb_roi.csv' />
 
+  <!-- Start the node with given arguments -->
   <node name='taskboard_data_labeler' pkg='nist_atb_eval' type='data_labeler.py' output='screen' required='true'>
     <param name='source_path' value='$(arg source_path)' />
     <param name='starting_position' value='$(arg starting_position)' />
     <param name='save_path' value='$(arg save_path)' />
     <param name='save_file' value='$(arg save_file)' />
-    <param name='roi_csv' value='$(find nist_atb_eval)/config/tb_roi.csv' />
+    <param name='roi_csv' value='$(arg roi_csv)' />
   </node>
 </launch>

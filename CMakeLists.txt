@@ -165,6 +165,7 @@ include_directories(
    src/data_collection.py
    src/import_test.py
    src/data_labeler.py
+   src/roi_img_split.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
