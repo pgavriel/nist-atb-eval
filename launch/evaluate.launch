@@ -1,9 +1,0 @@
-<launch>
-  <node name='eval' pkg='nist_atb_eval' type='evaluate.py' output='screen'>
-    <param name='step' value='true' />
-    <param name='roi_file' value='$(find nist_atb_eval)/config/tb_roi.csv' />
-    <param name='data_dir' value='$(find nist_atb_eval)/data' />
-    <param name='eval_dir' value='$(find nist_atb_eval)/data/09/' />
-    <param name='eval_img' value='09-000-Warped.png' />
-  </node>
-</launch>

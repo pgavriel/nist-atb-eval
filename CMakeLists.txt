@@ -161,11 +161,12 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
-   src/roi_config.py
-   src/data_collection.py
+   src/old_data_collection.py
    src/import_test.py
+   src/roi_config.py
    src/data_labeler.py
    src/roi_img_split.py
+   src/network_trainer.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 

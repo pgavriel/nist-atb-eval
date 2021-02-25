@@ -60,8 +60,10 @@ Once your ROI csv is set up, this launch file will go through a folder of taskbo
 ![16mm Rod](data/misc/rod.gif)
 ![Medium Gear](data/misc/gear.gif)
 ![M16 Nut](data/misc/nut.gif)   
-Now that you have 20 folders full of correctly labeled component images, it's time to train the models. The **network_trainer.py** script is used for this.
-
+### network_trainer.launch  (network_trainer.py)   
+After splitting your training data, you should now have 20 folders full of correctly labeled component images (the label should be the first character in the filename). The network_trainer.launch file will allow you to quickly train and test models for any components you specify. Arguments in the launch file are: the path to the folder containing **all** of the component image folders, the path to your set of testing folders, the path to save models to, model version (which is used when evaluating to find the right model), training batch_size, number of epochs, which components to train, and a few others. Train one component at a time, several components (i.e. components:="2 7 9 17 19"), or all of them by setting the components argument to 0. To use:    
+> roslaunch nist_atb_eval network_trainer.launch     
+     
 ## STAGE 4: Taskboard Image Evaluation
 ![Scored Images](data/misc/tb_scores.png)  
 With the networks now trained, we should be able to extract a novel taskboard image, and feed it through the networks to evaluate the board state.  

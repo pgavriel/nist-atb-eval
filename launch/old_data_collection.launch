@@ -1,5 +1,5 @@
 <launch>
-  <node name='data_collection_node' pkg='nist_atb_eval' type='data_collection.py' output='screen'>
+  <node name='data_collection_node' pkg='nist_atb_eval' type='old_data_collection.py' output='screen'>
     <!-- In step_through mode, program will wait indefinitely for a key press -->
     <param name='step_through' value='false' />
     <!-- Delay in milliseconds between frames (when step_through is disabled) -->

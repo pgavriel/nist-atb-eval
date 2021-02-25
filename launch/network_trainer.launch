@@ -1,0 +1,34 @@
+<launch>
+  <!-- Folder containing component image folders for training -->
+  <arg name='training_path' default='/home/pgavriel/tb_data' />
+  <!-- Specify whether to test the model or not -->
+  <arg name='test' default='true'/>
+  <!-- Folder containing component image folders for testing -->
+  <arg name='test_path' default='/home/pgavriel/tb_data/test' />
+  <!-- Folder to save model .pth files to -->
+  <arg name='save_path' default='$(find nist_atb_eval)/models' />
+  <!-- String to prepend to saved model names -->
+  <arg name='model_version' default='v0' />
+  <!-- Hyperparameters for training -->
+  <arg name='batch_size' default='1' />
+  <arg name='epochs' default='20' />
+  <arg name='show_loss_every' default='50' />
+  <!-- Specify components to train, multiple components can be separated by a space, set to 0 means train all components -->
+  <arg name='components' default='1' />
+  <!-- If true will prompt you with a sample image of the component being trained -->
+  <arg name='verify_component' default='true' />
+
+  <!-- Start the node with given arguments -->
+  <node name='taskboard_network_trainer' pkg='nist_atb_eval' type='network_trainer.py' output='screen' required='true'>
+    <param name='training_path' value='$(arg training_path)' />
+    <param name='test' value='$(arg test)' />
+    <param name='test_path' value='$(arg test_path)' />
+    <param name='save_path' value='$(arg save_path)' />
+    <param name='model_version' value='$(arg model_version)' />
+    <param name='batch_size' value='$(arg batch_size)' />
+    <param name='epochs' value='$(arg epochs)' />
+    <param name='show_loss_every' value='$(arg show_loss_every)' />
+    <param name='components' value='$(arg components)' />
+    <param name='verify_component' value='$(arg verify_component)' />
+  </node>
+</launch>
